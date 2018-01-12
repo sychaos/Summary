@@ -1,7 +1,7 @@
 # View事件传递机制
 ![](res/事件分发机制.png)
 
-如图所示 touch事件由 activity->viewgroup->view 的顺序调用 dispatchTouchEvent 如果 dispatchTouchEvent返回为false则事件不再向下传递，调用该层的onTouch（如果没有则调用onTouchEvent）然后如果该层的onTouch（onTouchEvent）返回为false则调用该层的上一层的onTouch（onTouchEvent）如果一路走来都没有就调用activity的onTouch（onTouchEvent）返回为true则该事件被消费
+如图所示 touch事件由 activity->viewgroup->view 的顺序调用 dispatchTouchEvent 如果 dispatchTouchEvent返回为false则事件不再向下传递，调用该层父类的onTouch（如果没有则调用onTouchEvent）然后如果该层的onTouch（onTouchEvent）返回为false则调用该层的上一层的onTouch（onTouchEvent）如果一路走来都没有就调用activity的onTouch（onTouchEvent）返回为true则该事件被消费
 
 对于dispatchTouchEvent 返回 false 的含义应该是：事件停止往子View传递和分发同时开始往父控件回溯（父控件的onTouchEvent开始从下往上回传直到某个onTouchEvent return true），事件分发机制就像递归，return false 的意义就是递归停止然后开始回溯。
 
