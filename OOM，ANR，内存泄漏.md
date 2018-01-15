@@ -18,6 +18,7 @@
   8.使用bitmap时谨慎处理：及时回收，设置一定的采样率，巧妙的运用软引用
   
 ## 内存泄漏
+使用什么检查内存泄露
   1.对于使用了BraodcastReceiver，ContentObserver，File，游标 Cursor，Stream，Bitmap等资源的使用，应该在Activity销毁时及时关闭或者注销。
   
   2.静态内部类持有外部成员变量（或context）:可以使用弱引用或使用ApplicationContext。
