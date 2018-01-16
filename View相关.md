@@ -12,3 +12,8 @@ draw阶段： TODO
 
 自定义View如何考虑机型适配
 自定义View如何提供获取View属性的接口；TODO 点击事件之类的
+
+## 自定义View过程：onMeasure()、onLayout()、onDraw()
+    * onMeasure() 方法：单一 View，一般重写此方法，针对 wrap_ content 情况，规定 View 默认的大小值，避免于 match_parent 情况一致。ViewGroup，若不重写，就会执行和单子View 中相同逻辑，不会测量子 View。一般会重写 onMeasure() 方法，循环测量子 View。
+    * onLayout()方法:单一 View，不需要实现该方法。ViewGroup 必须实现，该方法是个抽象方法，实现该方法，来对子 View 进行布局。
+    * onDraw() 方法：无论单一View，或者 ViewGroup 都需要实现该方法，因其是个空方法
