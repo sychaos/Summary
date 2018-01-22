@@ -42,3 +42,35 @@ onCreate()和 onRestoreInstanceState() 的区别：onRestoreInstanceState()回�
 
 Activity 由于异常终止时，系统会调用 onSaveInstanceState()来保存 Activity 状态 ( onStop() 之前和 onPause() 没有既定的时序关系 )。当重建时，会调用 onRestoreInstanceState()，并且把 Activity 销毁时 onSaveInstanceState() 方法所保存的 Bundle 对象参数同时传递给 onSaveInstanceState() 和 onCreate() 方法。因此，可通过 onRestoreInstanceState() 方法来恢复 Activity 的状态，该方法的调用时机是在 onStart() 之后。
 onCreate()和 onRestoreInstanceState() 的区别：onRestoreInstanceState()回调则表明其中 Bundle 对象非空，不用加非空判断。onCreate() 需要非空判断。建议使用onRestoreInstanceState().
+
+## Activity 的启动流程 TODO
+
+## Fragment状态保存 TODO
+
+## startActivityForResult是哪个类的方法，在什么情况下使用，如果在Adapter中使用应该如何解耦 TODO
+
+## ApplicationContext和ActivityContext的区别
+* Activity和Service以及Application的Context是不一样的,Activity继承自ContextThemeWraper.其他的继承自ContextWrapper
+* 每一个Activity和Service以及Application的Context都是一个新的ContextImpl对象
+* getApplication()用来获取Application实例的，但是这个方法只有在Activity和Service中才能调用的到。那么也许在绝大多数情况下我们都是在Activity或者Service中使用Application的，但是如果在一些其它的场景，比如BroadcastReceiver中也想获得Application的实例，这时就可以借助getApplicationContext()方法，getApplicationContext()比getApplication()方法的作用域会更广一些，任何一个Context的实例，只要调用getApplicationContext()方法都可以拿到我们的Application对象。
+* Activity在创建的时候会new一个ContextImpl对象并在attach方法中关联它，Application和Service也差不多。ContextWrapper的方法内部都是转调ContextImpl的方法
+* 创建对话框传入Application的Context是不可以的
+* 尽管Application、Activity、Service都有自己的ContextImpl，并且每个ContextImpl都有自己的mResources成员，但是由于它们的mResources成员都来自于唯一的ResourcesManager实例，所以它们看似不同的mResources其实都指向的是同一块内存
+* Context的数量等于Activity的个数 + Service的个数 + 1，这个1为Application
+
+## IntentService TODO 啥？？
+
+## 为什么在Service中创建子线程而不是Activity中
+
+    这是因为Activity很难对Thread进行控制，当Activity被销毁之后，就没有任何其它的办法可以再重新获
+    取到之前创建的子线程的实例。而且在一个Activity中创建的子线程，另一个Activity无法对其进行操作。但是Service
+    就不同了，所有的Activity都可以与Service进行关联，然后可以很方便地操作其中的方法，即使Activity被销毁了，之后只要重
+    新与Service建立关联，就又能够获取到原有的Service中Binder的实例。因此，使用Service来处理后台任务，
+    Activity就可以放心地finish，完全不需要担心无法对后台任务进行控制的情况。(原有的Service中Binder怎么获取 TODO)
+
+
+AlertDialog,popupWindow,Activity区别
+
+AndroidManifest的作用与理解
+
+ViewPager使用细节，如何设置成每次只初始化当前的Fragment，其他的不初始化

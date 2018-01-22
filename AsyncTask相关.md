@@ -4,7 +4,7 @@
 ## 注意：
   AsyncTask的类必须在UI线程加载（从4.1开始系统会帮我们自动完成）
   
-  AsyncTask对象必须在UI线程创建
+  AsyncTask对象必须在UI线程创建（为什么 TODO）
   
   execute方法必须在UI线程调用
   
@@ -29,3 +29,5 @@
 屏幕旋转或Activity在后台被系统杀掉等情况会导致Activity的重新创建，之前运行的AsyncTask会持有一个之前Activity的引用，这个引用已经无效，这时调用onPostExecute()再去更新界面将不再生效。
   4.并行还是串行
 在Android1.6之前的版本，AsyncTask是串行的，在1.6至2.3的版本，改成了并行的。在2.3之后的版本又做了 修改，可以支持并行和串行，当想要串行执行时，直接执行execute()方法，如果需要执行executeOnExecutor(Executor)。
+
+如何取消AsyncTask

@@ -1,8 +1,13 @@
 # Binder机制
+在Activity和Service进行通讯的时候，用到了Binder。
+    * 1.当属于同个进程我们可以继承Binder然后在Activity中对Service进行操作
+    * 2.当不属于同个进程，那么要用到AIDL让系统给我们创建一个Binder，然后在Activity中对远端的Service进行操作。
 
 写一个消息...
 预览帮助
 选择文件
+
+Looper阻塞为什么不ANR
 
 
 # Handler机制

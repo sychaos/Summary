@@ -16,9 +16,12 @@
   7.static关键字等。 定义为static的对象持有另一个对象会导致该对象无法被销毁
   
   8.使用bitmap时谨慎处理：及时回收，设置一定的采样率，巧妙的运用软引用
+
+  9.Android中进程内存的分配，能不能自己分配定额内存
+
+  10.Oom 是否可以try catch ？
   
 ## 内存泄漏
-使用什么检查内存泄露
   1.对于使用了BraodcastReceiver，ContentObserver，File，游标 Cursor，Stream，Bitmap等资源的使用，应该在Activity销毁时及时关闭或者注销。
   
   2.静态内部类持有外部成员变量（或context）:可以使用弱引用或使用ApplicationContext。
@@ -34,6 +37,9 @@
   7.设置过的监听不用时，及时移除。如在Destroy时及时remove。尤其以addListener开头的，在Destroy中都需要remove。
   
   8.activity泄漏可以使用LeakCanary。
+
+  概述：内存泄漏最大的问题就是无用对象常驻内存，导致内存压力很大，最后可能导致oom发生。尽量将对象生命周期可以在控制的能力之内，具体的在回复说吧，也很多场景,比如：context 除了特殊情况用activity，其他我们没理由不用application。排查导出堆空间，然后mat分析，程序里面
+  用leackcanary定位。
   
 ## ANR
 
