@@ -69,8 +69,30 @@ onCreate()和 onRestoreInstanceState() 的区别：onRestoreInstanceState()回�
     Activity就可以放心地finish，完全不需要担心无法对后台任务进行控制的情况。(原有的Service中Binder怎么获取 TODO)
 
 
+## Activity有几种启动模式？有什么区别？
+    Activity启动有4种模式，区别如下：
+    standard:Activity的每一次启动都会新建一个Activity实例，并将其压入任务栈的栈顶，而不管这个Activity是否存在，并且会走生命周期
+    singleTop:栈顶复用模式，这种模式下，如果Activity已经位于任务栈的栈顶，那么此Activity不会被重新创建，所以他的启动三回调就不会执行，同时Activity的onNewIntent 方法会被回调，如果Activity已经存在但是不在栈顶，那么它的作用和standard一样。
+    singleTask:系统创建新任务并实例化位于新任务底部的 Activity。但是，如果该 Activity 的一个实例已存在于一个单独的任务中，则系统会通过调用现有实例的 onNewIntent() 方法向其传送 Intent，而不是创建新实例。一次只能存在 Activity 的一个实例。
+    singleInstance:单独创建一个新的任务栈。
+
+
 AlertDialog,popupWindow,Activity区别
 
 AndroidManifest的作用与理解
 
 ViewPager使用细节，如何设置成每次只初始化当前的Fragment，其他的不初始化
+
+显式Intent：即直接指定需要打开的Activity类，可以唯一确定一个Activity，意图特别明确，所以是显式的。设置这个类的方式可以是Class对象（如SecondActivity.class），也可以是包名加类名的字符串。应用程序内部Activity跳转常用这个方式。
+隐式Intent:，隐式不明确指定启动哪个Activity，而是设置Action、Data、Category，让系统来筛选出合适的Activity。筛选是根据所有的
+
+一个已经被bind启动的Service调用startService后生命周期是怎么样的
+
+Android启动模式；生命周期方法，onStart和inResume区别；onPause和onStop区别。如何使屏幕旋转不销毁Activity
+    不设置Activity的android:configChanges时，切屏会重新回掉各个生命周期，切横屏时会执行一次，切竖屏时会执行两次
+    设置Activity的android:configChanges=”orientation”时，切屏还是会调用各个生命周期，切换横竖屏只会执行一次
+    设置Activity的android:configChanges=”orientation |keyboardHidden”时，切屏不会重新调用各个生命周期，只会执行onConfigurationChanged方法
+
+Service的启动方式；如何使service在新的进程中启动；如何保活一个进程；
+
+一个电话打进来，会调用什么生命周期

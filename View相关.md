@@ -21,3 +21,20 @@ draw阶段： TODO
 ## 事件传递及滑动冲突的处理 TODO
     事件传递理解成责任链式调用就好，也就是从最内层到外层时间委派，如果事件consume了，那么就给这个view处理，不然从外向内冒泡，
     冲突处理举个实例就好，比如SlideMenu与banner或者ListView与Scrollview的冲突等等，说出基本思路就行，这些解决一般都是重写那几个事件方法，然后各种判断就好
+
+理解Window和WindowManager
+RemoteView的应用
+
+SurfaceView
+SurfaceView和View的区别
+
+Dialog和Toast可以在Service中弹出吗？Dialog和Toast的本质区别是怎样的？
+
+validate和postValiedate的区别
+
+ListView卡顿原因
+Adapter的getView方法里面convertView没有使用setTag和getTag方式；
+在getView方法里面ViewHolder初始化后的赋值或者是多个控件的显示状态和背景的显示没有优化好，抑或是里面含有复杂的计算和耗时操作；
+在getView方法里面 inflate的row 嵌套太深（布局过于复杂）或者是布局里面有大图片或者背景所致；
+Adapter多余或者不合理的notifySetDataChanged；
+listview 被多层嵌套，多次的onMessure导致卡顿，如果多层嵌套无法避免，建议把listview的高和宽设置为fill_parent. 如果是代码继承的listview，那么也请你别忘记为你的继承类添加上LayoutPrams，注意高和宽都是fill_parent的；

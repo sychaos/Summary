@@ -31,3 +31,16 @@
 在Android1.6之前的版本，AsyncTask是串行的，在1.6至2.3的版本，改成了并行的。在2.3之后的版本又做了 修改，可以支持并行和串行，当想要串行执行时，直接执行execute()方法，如果需要执行executeOnExecutor(Executor)。
 
 如何取消AsyncTask
+
+## Activity销毁但Task如果没有销毁掉，当Activity重启时这个AsyncTask该如何解决？
+比如屏幕旋转这个例子，在重建Activity的时候，会回调  Activity.onRetainNonConfigurationInstance()重新传递一个新的对象给AsyncTask，完成引用的更新。
+若Activity已经销毁,此时AsyncTask执行完并返回结果,会报异常么?当一个App旋转时，整个Activity会被销毁和重建。
+当Activity重启时，AsyncTask中对该Activity的引用是无效的，因此onPostExecute()就不会起作用
+若AsyncTask正在执行，折会报 view not attached to window manager 异常
+同样也是生命周期的问题，在 Activity 的onDestroy()方法中调用AsyncTask.cancel方法，让二者的生命周期同步
+
+一个AsyncTask对象的实例 只能execute一次
+
+## AsyncTask在不同的SDK版本中的区别：
+调用AsyncTask的excute方法不能立即执行程序的原因分析及改善方案
+通过查阅官方文档发现，AsyncTask首次引入时，异步任务是在一个独立的线程中顺序的执行，也就是说一次只能执行一个任务，不能并行的执行，从1.6开始，AsyncTask引入了线程池，支持同时执行5个异步任务，也就是说同时只能有5个线程运行，超过的线程只能等待，等待前面的线程某个执行完了才被调度和运行。换句话说，如果一个进程中的AsyncTask实例个数超过5个，那么假如前5个都运行很长时间的话，那么第6个只能等待机会了。这是AsyncTask的一个限制，而且对于2.3以前的版本无法解决。如果你的应用需要大量的后台线程去执行任务，那么你只能放弃使用AsyncTask，自己创建线程池来管理Thread。不得不说，虽然AsyncTask较Thread使用起来方便，但是它最多只能同时运行5个线程，这也大大局限了它的实力，你必须要小心设计你的应用，错开使用AsyncTask的时间，尽力做到分时，或者保证数量不会大于5个，否则就会遇到上次提到的问题。可能是Google意识到了AsyncTask的局限性了，从Android3.0开始对AsyncTask的API作出了一些调整：每次只启动一个线程执行一个任务，完成之后再执行第二个任务，也就是相当于只有一个后台线程在执行所提交的任务。
