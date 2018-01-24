@@ -20,7 +20,11 @@
 
 ## Activity 的启动流程 TODO
 ## Service 的启动流程 TODO
-## startActivityForResult是哪个类的方法，在什么情况下使用，如果在Adapter中使用应该如何解耦 TODO
+## startActivityForResult是哪个类的方法，在什么情况下使用
+
+## 如果在Adapter中使用startActivityForResult应该如何解耦
+    * 最暴力的用广播
+    * context强转成Activity
 
 ## Activity 的四种启动模式和特点
 一个应用默认只有一个任务栈
