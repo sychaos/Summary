@@ -5,12 +5,14 @@
 * AsyncTask 封装了两个线程池和一个 Handler，（SerialExecutor 用于排队，THREAD_POOL_EXECUTOR 为真正的执行任务，Handler 将工作线程切换到主线程），其必须在 UI 线程中创建，execute 方法必须在 UI 线程中执行，一个任务实例只允许执行一次，执行多次将抛出异常，用于网络请求或者简单数据处理。
 * IntentService：处理异步请求，实现多线程，在 onHandleIntent 中处理耗时操作，多个耗时任务会依次执行，执行完毕后自动结束。
 
-AsyncTask的cancel：AsyncTask不会不考虑结果而直接结束一个线程。调用cancel()其实是给AsyncTask设置一个"canceled"状态。这取决于你去检查AsyncTask是否已经取消，之后决定是否终止你的操作。
+## AsyncTask的cancel：
+AsyncTask不会不考虑结果而直接结束一个线程。调用cancel(mayInterruptIfRunning：Boolean)其实是给AsyncTask设置一个"canceled"状态。
 对于mayInterruptIfRunning——它所作的只是向运行中的线程发出interrupt()调用。在这种情况下，你的线程是不可中断的，也就不会终止该线程。
+正确的方法 在doInBackGround方法中调用isCanceled
 
 ## 静态内部类实现单例的原理
     因为内部静态类是要在有引用了以后才会装载到内存的。所以在你第一次调用getInstance()之前，SingletonHolder是没有被装载进来的，
-    只有在你第一次调用了getInstance()之后，里面涉及到了return return SingletonHolder.instance; 产生了对SingletonHolder的引用，内部静态类的实例才会真正装载。这也就是懒加载的意思
+    只有在你第一次调用了getInstance()之后，里面涉及到了return SingletonHolder.instance; 产生了对SingletonHolder的引用，内部静态类的实例才会真正装载。这也就是懒加载的意思
 
 ## 单例模式的双层锁原理
     ```java
@@ -153,18 +155,98 @@ AsyncTask的cancel：AsyncTask不会不考虑结果而直接结束一个线程�
 ## 为什么不能在子线程更新UI
     如果子线程都能更新UI的话，问题还很多的。。
 
-## 如何保证多线程读写文件的安全？TODO 我曹好高端啊
+## 如何保证多线程读写文件的安全？
     多线程下载大概思路就是通过Range 属性实现文件分段
-    RandomAccessFile是否可以实现写文件不加锁
+    RandomAccessFile是否可以实现分段写文件
 
-线程同步，CopyOnWriteArrayList怎样实现。TODO
-volatile原理
-synchronized与Lock的区别
-锁机制
-wait/notify
-手写生产者/消费者模式
-线程如何关闭，以及如何防止线程的内存泄漏
-ThreadLocal原理，实现及如何保证Local属性
-长连接是什么？为什么用长连接？心跳时间是如何确定的？
+## 线程同步
+    Synchronized(同步)
 
-线程池的源码；当达到核心线程数后，新加的任务是怎样操作的？RejectHandler是在哪个线程中处理的？可重入锁的源码实现，可重入锁是如何保证可见性和原子性的；volatile是如何保证可见性的。
+## volatile，synchronized，Lock 用法
+
+## volatile原理
+    volatile是如何保证可见性的 TODO
+    Atomic TODO
+　  当对非 volatile 变量进行读写的时候，每个线程先从内存拷贝变量到CPU缓存中。如果计算机有多个CPU，每个线程可能在不同的CPU上被处理，这意味着每个线程可以拷贝到不同的 CPU cache 中。
+    而声明变量是 volatile 的，JVM 保证了每次读变量都从内存中读，跳过 CPU cache 这一步
+
+    通常来说，使用volatile必须具备以下2个条件：
+    1）对变量的写操作不依赖于当前值
+    2）该变量没有包含在具有其他变量的不变式中
+
+
+## synchronized与Lock的区别 不懂哈
+　　1）Lock是一个接口，而synchronized是Java中的关键字，synchronized是内置的语言实现；
+
+　　2）synchronized在发生异常时，会自动释放线程占有的锁，因此不会导致死锁现象发生；而Lock在发生异常时，如果没有主动通过unLock()去释放锁，则很可能造成死锁现象，因此使用Lock时需要在finally块中释放锁；
+
+　　3）Lock可以让等待锁的线程响应中断，而synchronized却不行，使用synchronized时，等待的线程会一直等待下去，不能够响应中断；
+
+　　4）通过Lock可以知道有没有成功获取锁，而synchronized却无法办到。
+
+　　5）Lock可以提高多个线程进行读操作的效率。
+
+    可重入锁的源码实现，可重入锁是如何保证可见性和原子性的；
+
+## 守护线程
+   所谓守护线程是指在程序运行的时候在后台提供一种通用服务的线程，比如垃圾回收线程就是一个很称职的守护者，并且这种线程并不属于程序中不可或缺的部分。
+   因此，当所有的非守护线程结束时，程序也就终止了，同时会杀死进程中的所有守护线程。反过来说，只要任何非守护线程还在运行，程序就不会终止。
+   守护线程和用户线程的没啥本质的区别：唯一的不同之处就在于虚拟机的离开：如果用户线程已经全部退出运行了，只剩下守护线程存在了，虚拟机也就退出了。
+   因为没有了被守护者，守护线程也就没有工作可做了，也就没有继续运行程序的必要了。将线程转换为守护线程可以通过调用Thread对象的setDaemon(true)方法来实现。
+
+   ### 在使用守护线程时需要注意一下几点：
+   * thread.setDaemon(true)必须在thread.start()之前设置，否则会跑出一个IllegalThreadStateException异常。你不能把正在运行的常规线程设置为守护线程。
+   * 在Daemon线程中产生的新线程也是Daemon的。
+   * 守护线程应该永远不去访问固有资源，如文件、数据库，因为它会在任何时候甚至在一个操作的中间发生中断。
+
+## 守护进程 好麻烦
+    也就是通常说的 Daemon 进程（精灵进程），是 Linux 中的后台服务进程。它是一个生存期较长的进程，通常独立于控制终端并且周期性地执行某种任务或等待处理某些发生的事件。
+
+## 线程如何关闭
+    1.  使用退出标志，使线程正常退出，也就是当run方法完成后线程终止。
+    ```java
+    public class ThreadFlag extends Thread
+    {
+        public volatile boolean exit = false;
+
+        public void run()
+        {
+            while (!exit);
+        }
+        public static void main(String[] args) throws Exception
+        {
+            ThreadFlag thread = new ThreadFlag();
+            thread.start();
+            sleep(5000); // 主线程延迟5秒
+            thread.exit = true;  // 终止线程thread
+            thread.join();
+            System.out.println("线程退出!");
+        }
+    }
+
+    ```
+
+    2.  使用interrupt方法中断线程。
+
+## ThreadLocal原理，实现及如何保证Local属性
+    * ThreadLocal是一个线程内部的数据存储类，通过它可以在指定的线程中存储数据，数据存储以后，只有在指定线程中可以获取到存储的数据，对于其它线程来说无法获取到数据
+
+    * 一般来说，当某些数据是以线程为作用域并且不同线程具有不同的数据副本的时候，就可以考虑采用ThreadLocal。
+    ThreadLocal另一个使用场景是复杂逻辑下的对象传递，比如监听器的传递，有些时候一个线程中的任务过于复杂，这可能表现为函数调用栈比较深以及代码入口的多样性，
+    在这种情况下，我们又需要监听器能够贯穿整个线程的执行过程，这个时候可以怎么做呢？
+    其实就可以采用ThreadLocal，采用ThreadLocal可以让监听器作为线程内的全局对象而存在，在线程内部只要通过get方法就可以获取到监听器。
+
+    * 从ThreadLocal的set和get方法可以看出，它们所操作的对象都是当前线程的localValues对象的table数组，因此在不同线程中访问同一个ThreadLocal的set和get方法，
+    它们对ThreadLocal所做的读写操作仅限于各自线程的内部，这就是为什么ThreadLocal可以在多个线程中互不干扰地存储和修改数据
+
+## 长连接是什么？为什么用长连接？心跳时间是如何确定的？ TODO
+## wait/notify TODO
+
+## 线程池
+* newCachedThreadPool
+* newSingleThreadExecutor
+* newFixedThreadPool
+* newScheduledThreadPool
+当达到核心线程数后，新加的任务是怎样操作的？
+
+synchronized锁住的是括号里的对象，而不是代码。对于非static的synchronized方法，锁的就是对象本身也就是this。

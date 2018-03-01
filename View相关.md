@@ -42,7 +42,9 @@ Dialog和Toast可以在Service中弹出吗？Dialog和Toast的本质区别是怎
 ## validate和postValidate的区别
 前者在UI线程中使用，后者在非UI线程中使用
 
-ListView卡顿原因
+自定义 View 的注意事项
+
+## ListView卡顿原因，ListView优化
 Adapter的getView方法里面convertView没有使用setTag和getTag方式；
 在getView方法里面ViewHolder初始化后的赋值或者是多个控件的显示状态和背景的显示没有优化好，抑或是里面含有复杂的计算和耗时操作；
 在getView方法里面 inflate的row 嵌套太深（布局过于复杂）或者是布局里面有大图片或者背景所致；

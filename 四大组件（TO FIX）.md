@@ -16,11 +16,19 @@
 * setArguments
 * 广播
 
+![](res/Activity  Window  View之间的关系.png)
 ![](res/fragment与activity的关系.png)
 
 ## Activity 的启动流程 TODO
 ## Service 的启动流程 TODO
 ## startActivityForResult是哪个类的方法，在什么情况下使用
+
+## Activity 如何显示到屏幕上
+
+## Service多次解绑
+    绑定服务，首先要做的事情就是先用Map记录当前绑定服务所需的一些信息。 然后启动服务。
+    解绑服务，先从早前的Map集合中移除记录，然后停止服务。
+    如果再次解绑，无非就是再到这个map集合中找找有没有这条记录，没有就抛出服务没有注册的异常，也就是早前根本没有注册过任何服务。
 
 ## 如果在Adapter中使用startActivityForResult应该如何解耦
     * 最暴力的用广播
@@ -134,7 +142,7 @@ APK是Android安装包，Dalvik和ART都是Android运行环境，ART是在高版
     设置Activity的android:configChanges=”orientation”时，切屏还是会调用各个生命周期，切换横竖屏只会执行一次
     设置Activity的android:configChanges=”orientation |keyboardHidden”时，切屏不会重新调用各个生命周期，只会执行onConfigurationChanged方法
 
-一个电话打进来，会调用什么生命周期
+## 一个电话打进来，会调用什么生命周期
 onPause(A) -> onCreate(B) -> onStart(B)-> onResume(B) -> onStop(A)
 
 显式Intent：即直接指定需要打开的Activity类，可以唯一确定一个Activity，意图特别明确，
@@ -142,11 +150,11 @@ onPause(A) -> onCreate(B) -> onStart(B)-> onResume(B) -> onStop(A)
 隐式Intent:，隐式不明确指定启动哪个Activity，而是设置Action、Data、Category，让系统来筛选出合适的Activity。筛选是根据所有的
 
 
-Service的启动方式；如何使service在新的进程中启动；
+## Service的启动方式；如何使service在新的进程中启动；
     android:process=".process"
     然后利用隐式启动
 
-如何保活一个进程
+## 如何保活一个进程
 6.0 有个schedule啥啥啥的
 
 * 提供进程优先级，降低进程被杀死的概率
@@ -161,3 +169,28 @@ Service的启动方式；如何使service在新的进程中启动；
 方法四：onDestroy方法里重启service：service +broadcast 方式，就是当service走ondestory的时候，发送一个自定义的广播，当收到广播的时候，重新启动service；
 * 依靠第三方
 根据终端不同，在小米手机（包括 MIUI）接入小米推送、华为手机接入华为推送；其他手机可以考虑接入腾讯信鸽或极光推送与小米推送做 A/B Test。
+
+
+## 为什么Dialog不能用Application的Context
+Dialog初化始时是通过Context.getSystemServer 来获取 WindowManager，而如果用Application或者Service的Context去获取这个WindowManager服务的话，会得到一个WindowManagerImpl的实例，这个实例里token也是空的。
+之后在Dialog的show方法中将Dialog的View(PhoneWindow.getDecorView())添加到WindowManager时会给token设置默认值还是null。
+如果这个Context是Activity，则直接返回Activity的mWindowManager，这个mWindowManager在Activity的attach方法被创建，Token指向此Activity的Token，mParentWindow为Activity的Window本身
+
+那为什么一定要是Activity的Token呢？我想使用Token应该是为了安全问题，通过Token来验证WindowManager服务请求方是否是合法的。
+如果我们可以使用Application的Context，或者说Token可以不是Activity的Token，那么用户可能已经跳转到别的应用的Activity界面了，但我们却可以在别人的界面上弹出我们的Dialog，想想就觉得很危险。
+
+## View的测量宽/高和最终宽/高有什么区别（另一种问法: view 的 getMeasuredWidth 和 getWidth 有什么区别）
+
+* 在 View 的默认实现中 View 的测量宽/高和最终宽/高是相等的，只不过 测量宽高（getMeasureWidth/Height）是在 view 的 measure 过程中调用的，
+而 view 的 最终宽高（getWidth/Height）是在 view 的 layout 过程中调用的;即两者的赋值时机不同，测量宽高比最终宽高获取的时机稍微早点;
+
+* 在一般开发中这两者的值是一样的，但是也会存在特殊情况，
+比如在 view 的 layout 方法中:
+```java
+public void layout(int l, int t, int r, int b){
+     super.layout(l, t, r+100, b+100);
+}
+```
+这个步骤就会导致测量宽高比最终宽高小 100px
+
+另一种情况是在某些情况下 View 需要多次 measure 才能确定自己的测量宽高，在前几次的测量宽高过程中得出的值可能和最终宽高的不一致，但最终来说：测量宽高和最终宽高相等
