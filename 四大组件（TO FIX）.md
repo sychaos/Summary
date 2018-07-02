@@ -16,7 +16,6 @@
 * setArguments
 * 广播
 
-![](res/Activity Window View之间的关系.png)
 ![](res/fragment与activity的关系.png)
 
 ## Activity 的启动流程 TODO
