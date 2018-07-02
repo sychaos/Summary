@@ -43,7 +43,7 @@
   4. 并行还是串行
 在Android1.6之前的版本，AsyncTask是串行的，在1.6至2.3的版本，改成了并行的。在2.3之后的版本又做了 修改，可以支持并行和串行，当想要串行执行时，直接执行execute()方法，如果需要执行executeOnExecutor(Executor)。
 
-如何取消AsyncTask
+## 如何取消AsyncTask
 
 ## Activity销毁但Task如果没有销毁掉，当Activity重启时这个AsyncTask该如何解决？
 比如屏幕旋转这个例子，在重建Activity的时候，会回调  Activity.onRetainNonConfigurationInstance()重新传递一个新的对象给AsyncTask，完成引用的更新。
