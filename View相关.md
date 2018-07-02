@@ -6,9 +6,9 @@ Activity启动时，ActivityThread.handleResumeActivity()方法中建立了decor
 上面的方法中调用了scheduleTraversals()方法来调度一次完成的绘制流程，该方法会向主线程发送一个“遍历”消息，最终会导致ViewRootImpl的performTraversals()方法被调用。
 ![](res/view绘制.png)  
 最终会导致ViewRootImpl的performTraversal会依次调用measure，layout，draw
-measure阶段：TODO
-layout阶段：TODO
-draw阶段： TODO
+1. measure阶段：TODO
+1. layout阶段：TODO
+1. draw阶段： TODO
 
 ## 自定义View如何考虑机型适配
 这里要考虑的是屏幕的问题：
