@@ -59,7 +59,7 @@ Activity 由于异常终止时，系统会调用 onSaveInstanceState()来保存 
 onCreate()和 onRestoreInstanceState() 的区别：onRestoreInstanceState()回调则表明其中 Bundle 对象非空，不用加非空判断。onCreate() 需要非空判断。建议使用onRestoreInstanceState().
 
 ## Fragment状态保存
-(Fragment状态保存)[http://blog.csdn.net/zephyr_g/article/details/53516568]
+[Fragment状态保存](http://blog.csdn.net/zephyr_g/article/details/53516568)
 
 ```java
 public class MainFragment extends Fragment {
