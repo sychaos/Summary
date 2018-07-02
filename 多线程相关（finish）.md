@@ -15,28 +15,28 @@ AsyncTask不会不考虑结果而直接结束一个线程。调用cancel(mayInte
 只有在你第一次调用了getInstance()之后，里面涉及到了return SingletonHolder.instance; 产生了对SingletonHolder的引用，内部静态类的实例才会真正装载。这也就是懒加载的意思
 
 ## 单例模式的双层锁原理
-    ```java
-    public class SingleTon {
+```java
+public class SingleTon {
 
-        private static SingleTon singleTon = null;
+    private static SingleTon singleTon = null;
 
 
-        private SingleTon() {
-        }
+    private SingleTon() {
+    }
 
-        public static SingleTon getInstance(){
-            if (singleTon == null) {
-                synchronized (SingleTon.class) {
-                    if (singleTon == null) {
-                        singleTon = new SingleTon();
-                    }
+    public static SingleTon getInstance(){
+        if (singleTon == null) {
+            synchronized (SingleTon.class) {
+                if (singleTon == null) {
+                    singleTon = new SingleTon();
                 }
             }
-            return singleTon;
         }
-
+        return singleTon;
     }
-    ```
+
+}
+```
 
 为何要使用双重检查锁定呢？上文已经大概说了一下。
 考虑这样一种情况，就是有两个线程同时到达，即同时调用 getInstance() 方法，
@@ -204,27 +204,26 @@ Atomic TODO
 
 ## 线程如何关闭
 1.  使用退出标志，使线程正常退出，也就是当run方法完成后线程终止。
-    ```java
-    public class ThreadFlag extends Thread
+```java
+public class ThreadFlag extends Thread
+{
+    public volatile boolean exit = false;
+
+    public void run()
     {
-        public volatile boolean exit = false;
-
-        public void run()
-        {
-            while (!exit);
-        }
-        public static void main(String[] args) throws Exception
-        {
-            ThreadFlag thread = new ThreadFlag();
-            thread.start();
-            sleep(5000); // 主线程延迟5秒
-            thread.exit = true;  // 终止线程thread
-            thread.join();
-            System.out.println("线程退出!");
-        }
+        while (!exit);
     }
-
-    ```
+    public static void main(String[] args) throws Exception
+    {
+        ThreadFlag thread = new ThreadFlag();
+        thread.start();
+        sleep(5000); // 主线程延迟5秒
+        thread.exit = true;  // 终止线程thread
+        thread.join();
+        System.out.println("线程退出!");
+    }
+}
+```
 
 2. 使用interrupt方法中断线程。
 
