@@ -6,7 +6,7 @@
 1. 当属于同个进程我们可以继承Binder然后在Activity中对Service进行操作  
 1. 当不属于同个进程，那么要用到AIDL让系统给我们创建一个Binder，然后在Activity中对远端的Service进行操作。
 
-Looper阻塞为什么不ANR
+# Looper阻塞为什么不ANR
 
 # Handler机制
    Android消息机制包含: MessageQueue、Handler、Looper、Message.
